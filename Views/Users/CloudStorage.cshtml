@@ -1,0 +1,127 @@
+﻿@model IEnumerable<Save_cloud.Models.Files>
+@{
+    ViewBag.Title = "Cloud Storage";
+}
+
+<h2>Cloud Storage</h2>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <!-- Добавление кнопки сортировки -->
+        <form method="get" asp-action="CloudStorage" class="form-inline">
+            <div class="form-group mr-3">
+                <label for="searchQuery">Search:</label>
+                <input type="text" id="searchQuery" name="searchQuery" class="form-control" />
+            </div>
+            <div class="form-group mr-3">
+                <select id="sortOrder" name="sortOrder" class="form-control">
+                    <option value="date">Sort by date</option>
+                    <option value="name">Sort by name</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </form>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-6 mt-4">
+        <!-- Правая колонка с кнопкой загрузки -->
+        <form id="uploadForm" enctype="multipart/form-data" method="post" action="@Url.Action("CloudStorage", "Users")" class="form-inline" onsubmit="disableButton()">
+            <div class="form-group mr-3">
+                <label for="file" class="mr-2">Upload File:</label>
+                <input type="file" id="file" name="file" class="form-control-file" />
+            </div>
+            <button id="uploadBtn" type="submit" class="btn btn-success btn-sm mr-2">Upload</button>
+        </form>
+    </div>
+</div>
+
+<!-- Таблица с файлами -->
+@if (Model != null && Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var file in Model)
+                {
+                    <tr>
+                        <td style="word-wrap: break-word;">
+                            @if (file.FileName.Length > 20)
+                            {
+                                @Html.Raw(file.FileName.Substring(0, 20) + "<br>" + file.FileName.Substring(20))
+                            }
+                            else
+                            {
+                                @Html.Raw(file.FileName)
+                            }
+                        </td>
+                        <td>
+                            <!-- Добавить кнопку Edit -->
+                            <a href="@Url.Action("Download", "Users", new { fileId = file.FileID })" class="btn btn-primary">Download</a>
+                            <a href="@Url.Action("Edit", "Users", new { fileId = file.FileID })" class="btn btn-secondary">Edit</a>
+                            <a href="@Url.Action("DeleteConfirmed", "Users", new { fileId = file.FileID })" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p>No files found.</p>
+}
+@if (ViewBag.TotalPages > 1)
+{
+    <div class="btn-group" role="group" aria-label="Pagination">
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a href="@Url.Action("CloudStorage", new { page = ViewBag.CurrentPage - 1 })" class="btn btn-primary">Previous</a>
+        }
+
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="@Url.Action("CloudStorage", new { page = i })" class="btn btn-primary @(i == ViewBag.CurrentPage ? "active" : "")">@i</a>
+        }
+
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a href="@Url.Action("CloudStorage", new { page = ViewBag.CurrentPage + 1 })" class="btn btn-primary">Next</a>
+        }
+    </div>
+}
+
+<script>
+    function disableButton() {
+        var btn = document.getElementById("uploadBtn");
+        btn.disabled = true;
+        btn.innerText = "Uploading...";
+    }
+    function uploadFile() {
+        var fileInput = document.getElementById('file');
+        var file = fileInput.files[0];
+        var formData = new FormData();
+        formData.append('file', file);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '@Url.Action("CloudStorage", "Users")');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // Обработка успешной загрузки файла
+                location.reload(); // Перезагрузка страницы после успешной загрузки файла
+            } else {
+                // Обработка ошибки загрузки файла
+                console.error('Upload failed: ' + xhr.statusText);
+            }
+        };
+
+        xhr.send(formData);
+    }
+</script>

@@ -1,0 +1,70 @@
+﻿@model Save_cloud.Models.Users
+@{
+    ViewBag.Title = "Log in";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+    <style>
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            margin-bottom: 15px; /* Отступ между элементами */
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+
+        <form action="@Url.Action("Register", "Users")" method="post">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(model => model.PasswordHash, "", new { @class = "text-danger" })
+            @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                <input type="text" id="Username" name="Username" class="form-control" placeholder="Email" />
+            </div>
+
+            <div class="form-group">
+                <label for="Password" class="control-label"></label>
+                <input type="password" id="Password" name="PasswordHash" class="form-control" placeholder="Password" />
+            </div>
+
+            <div class="form-group">
+                <label for="Role" class="control-label"></label>
+                <select id="Role" name="Role" class="form-control">
+                    <option value="0">User account</option>
+                    <option value="1">Admin account</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create account" class="btn btn-primary" />
+            </div>
+        </form>
+
+        <a href="@Url.Action("Login", "Users")" class="back-link">Log in</a>
+    </div>
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>
+</html>

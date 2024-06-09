@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        .login-btn, .logout-btn {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1 class="text-center mb-4">Welcome to Save_cloud!</h1>
+            <div class="text-center">
+                <img src="~/cloud.jpeg" alt="Logo" height="300" width="300">
+            </div>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <div class="text-center mt-4">
+                    <p>Welcome, @User.Identity.Name!</p>
+                    <p>
+                        You are logged in as
+                        @if (User.IsInRole("Admin"))
+                        {
+                        <a>Admin</a>
+                        }
+                        else if (User.IsInRole("User"))
+                        {
+                        <a>User</a>
+                        }
+                    </p>
+                </div>
+                <div class="text-center mt-4">
+                    <form action="@Url.Action("Logout", "Users")" method="post">
+                        <button type="submit" class="logout-btn">Logout</button>
+                    </form>
+                </div>
+                <div class="text-center mt-3">
+                    <form action="@Url.Action("DeleteAccount", "Users")" method="post" onsubmit="return confirm('Are you sure you want to delete your account?')">
+                        <button type="submit" class="btn btn-danger">Delete account</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="text-center mt-4">
+                    <p>You are not logged in.</p>
+                </div>
+                <div class="text-center mt-4">
+                    <a href="@Url.Action("Login", "Users")" class="login-btn">Login</a>
+                </div>
+
+            }
+        </div>
+    </div>
+</body>
+</html>

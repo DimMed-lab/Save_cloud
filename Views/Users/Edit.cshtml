@@ -1,0 +1,81 @@
+﻿@{
+    ViewBag.Title = "Edit File";
+}
+
+<h2>Edit File</h2>
+<form method="post" asp-action="Edit" enctype="multipart/form-data">
+    @if (ViewBag.Accesses.HasFlag(AccessType.Modify))
+    {
+        <div class="form-group">
+            <label for="newFileName">New File Name:</label>
+            <input type="text" id="newFileName" name="newFileName" class="form-control" value="@ViewBag.FileName" required />
+        </div>
+    }
+
+    @if (ViewBag.Accesses.HasFlag(AccessType.Share))
+    {
+        <div class="form-group">
+            <label for="userSearch">Search Users:</label>
+            <div class="input-group">
+                <input type="text" id="userSearch" class="form-control" onkeyup="searchUsers()" />
+                <div class="input-group-append">
+                    <button type="button" onclick="searchUsers()" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </div>
+        <div id="userResults">
+            <!-- Dynamic user search results will appear here -->
+        </div>
+    }
+    @if (ViewBag.Accesses.HasFlag(AccessType.Write))
+    {
+        <div class="form-group">
+            <label for="newFile">New File:</label>
+            <input type="file" id="newFile" name="newFile" class="form-control-file" />
+        </div>
+        <input type="hidden" id="fileId" name="fileId" value="@ViewBag.FileId" />
+    }
+    @if (ViewBag.Accesses.HasFlag(AccessType.Share)){
+        <div class="form-group">
+            <label>Access Type:</label><br />
+            <div class="form-check">
+                <input type="checkbox" id="readAccess" name="accessType" value="Read" class="form-check-input" />
+                <label for="readAccess" class="form-check-label">Read</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" id="writeAccess" name="accessType" value="Write" class="form-check-input" />
+                <label for="writeAccess" class="form-check-label">Write</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" id="modifyAccess" name="accessType" value="Modify" class="form-check-input" />
+                <label for="modifyAccess" class="form-check-label">Modify</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" id="deleteAccess" name="accessType" value="Delete" class="form-check-input" />
+                <label for="deleteAccess" class="form-check-label">Delete</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" id="shareAccess" name="accessType" value="Share" class="form-check-input" />
+                <label for="shareAccess" class="form-check-label">Share</label>
+            </div>
+        </div>
+    }
+
+    <input type="hidden" id="fileId" name="fileId" value="@ViewBag.FileId" />
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        // Функция для выполнения поиска пользователей
+        function searchUsers() {
+            var input = document.getElementById('userSearch').value;
+            // Отправляем запрос на сервер для поиска пользователей и обновляем результаты в динамическом контейнере
+            $("#userResults").load("/Users/SearchUsers?fileId=@ViewBag.FileId&search=" + input);
+        }
+
+    </script>
+}

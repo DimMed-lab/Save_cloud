@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Save_cloud.props" />
+</Project>
